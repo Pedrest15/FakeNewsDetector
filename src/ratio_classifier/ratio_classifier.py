@@ -26,7 +26,6 @@ class RatioClassifier:
         metrics = self.extract_metrics(text=text)
         score = 0
 
-
         if metrics["adj_ratio"] >= self.ADJ_RATIO:
             score -= 1
         
@@ -36,5 +35,6 @@ class RatioClassifier:
         if metrics["num_ratio"] >= self.NUM_RATIO:
             score += 1
 
-        return "REAL" if score >= 0 else "FAKE"
+        return "true" if score >= 0 else "fake"
 
+ratio_classifier = RatioClassifier()
