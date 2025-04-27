@@ -20,8 +20,8 @@ def calculate_metrics(file_name: str):
 
 if __name__ == '__main__':
     files = [
-        r"FakeNewsDetector\src\ratio_classifier\full_text_results.csv",
-        r"FakeNewsDetector\src\ratio_classifier\size_normalized_text_results.csv"
+        r"ratio_classifier\full_text_results.csv",
+        r"ratio_classifier\size_normalized_text_results.csv"
     ]
 
     for file in files:

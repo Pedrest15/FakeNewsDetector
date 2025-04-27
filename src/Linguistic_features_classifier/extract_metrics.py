@@ -1,5 +1,5 @@
 import sys
-from text_features import nlp, extrair_metricas_otimizado
+from linguistic_features_classifier.text_features import nlp, extrair_metricas_otimizado
 
 def classify_by_rules(text: str) -> int:
     doc = nlp(text)
@@ -11,7 +11,7 @@ def classify_by_rules(text: str) -> int:
 
 def main(text: str) -> str:
     label = classify_by_rules(text)
-    return "TRUE" if label == 1 else "FALSE"
+    return "true" if label == 1 else "fake"
 
 if __name__ == "__main__":
     texto = " ".join(sys.argv[1:])
