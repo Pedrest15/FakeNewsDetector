@@ -1,6 +1,7 @@
 import streamlit as st
-import random
+from psycolinguistic_classifier.psyco_stats import psycometric_classification
 from ratio_classifier.ratio_classifier import ratio_classifier
+from vocabulary_classifier.vocabulary_classifier import vocab_classifier
 
 st.title("Detector de Fake News")
 
@@ -8,7 +9,7 @@ st.title("Detector de Fake News")
 news_text = st.text_area("Digite a notícia que deseja verificar:")
 
 # Selectbox para escolha do modelo
-model_options = ["Ratio Classifier", "Modelo Sempre Verdade", "Modelo Sempre Fake"]
+model_options = ["Ratio Classifier", "Psycolinguistic Classifier", "Vocabulary Classifier"]
 selected_model = st.selectbox("Selecione o modelo de detecção:", model_options)
 if selected_model == "Ratio Classifier":
     st.info("Modelo baseado em analisar a frequência de adjetivos, advérbios e valores numéricos em uma notícia.")
@@ -20,10 +21,10 @@ if st.button("Avaliar Fake News"):
     else:
         if selected_model == "Ratio Classifier":
             result = ratio_classifier.news_classifier(text=news_text)
-        elif selected_model == "Modelo Sempre Verdade":
-            result = "true"
-        elif selected_model == "Modelo Sempre Fake":
-            result = "fake"
+        elif selected_model == "Psycolinguistic Classifier":
+            result = psycometric_classification(text=news_text)
+        elif selected_model == "Vocabulary Classifier":
+            result = vocab_classifier.news_classifier(sentence=news_text)
 
         # Exibe o resultado
         with st.expander("Resultado da Avaliação", expanded=True):
@@ -31,7 +32,8 @@ if st.button("Avaliar Fake News"):
             st.write("**Resultado da notícia:**")
             
             if result=="true":
-                st.success("Notícia Verdade")
+                st.success("Parece ser uma notícia verdadeira!")
             else:
-                st.error("Notícia Falsa (Fake News)")
+                st.error("""Cuidado, pode se tratar de uma notícia falsa (Fake News).
+                         Cheque em fontes confiáveis.""")
 

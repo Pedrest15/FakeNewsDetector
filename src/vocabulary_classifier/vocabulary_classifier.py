@@ -5,7 +5,7 @@ from nltk import RSLPStemmer
 class VocabularyClassifier:
 
     def __init__(self):
-        with open('parameters.json', 'r') as openfile:
+        with open(r'vocabulary_classifier\parameters.json', 'r') as openfile:
             json_object = json.load(openfile)
         self.CLASSIFICATION_THRESHOLD = json_object["CLASSIFICATION_THRESHOLD"]
         self.DICTIONARY = json_object["DICTIONARY"]
@@ -25,3 +25,5 @@ class VocabularyClassifier:
             return "FAKE"
         else:
             return "REAL"
+        
+vocab_classifier = VocabularyClassifier()

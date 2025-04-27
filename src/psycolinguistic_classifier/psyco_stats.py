@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import nltk
@@ -7,9 +6,7 @@ import random
 import spacy
 from collections import Counter
 from spacy.language import Language
-from spacy.matcher import Matcher
-from spacy.tokens import Doc, Span, Token
-from spacy import displacy
+from spacy.tokens import Doc, Token
 
 from pathlib import Path
 
@@ -18,13 +15,11 @@ nltk.download('punkt')
 nltk.download('rslp')
 nltk.download('stopwords')
 
-if __name__ == '__main__':
-    source_file = Path('..', 'data', 'psycholinguistic_ properties', 'BP.csv')
-else:
-    source_file = Path('data', 'psycholinguistic_ properties', 'BP.csv')
 
-if not source_file.exists():
-    raise FileNotFoundError('Check the psycholinguistic file location!')
+source_file = r"psycolinguistic_classifier\BP.csv"
+
+#if not source_file.exists():
+#    raise FileNotFoundError('Check the psycholinguistic file location!')
 
 
 psylin = pd.read_csv(
