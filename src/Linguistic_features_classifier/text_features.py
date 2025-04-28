@@ -74,6 +74,23 @@ def proporcao_entidades_especificas(doc, total_palavras):
 def contar_exclamacoes(doc):
     return sum(1 for t in doc if t.text == '!')
 
+def contar_modificadores(tokens_ling):
+    return sum(1 for t in tokens_ling if t.dep_ == "amod") 
+
+def contar_interrogacoes(doc):
+    return sum(1 for t in doc if t.text == '?')
+
+def contar_voz_passiva(doc):
+    return sum(1 for t in doc if t.dep_ == "aux:pass")
+
+def contar_palavras_conteudo(doc):
+    content_tags = {"NOUN", "VERB", "ADJ", "ADV"}
+    content_words = [t for t in doc if t.pos_ in content_tags]
+
+def contar_palavras_funcionais(doc):
+        content_tags = {"NOUN", "VERB", "ADJ", "ADV"}
+        function_words = [t for t in doc if t.pos_ not in content_tags and t.is_alpha]
+
     # ------ Métricas ------
 def extrair_metricas_otimizado(doc):
     """
@@ -104,12 +121,16 @@ def extrair_metricas_otimizado(doc):
     n_stopword_to_token_ratio = (contar_stopwords(tokens) / total_tokens_with_punct) if total_tokens_with_punct > 0 else 0
     pausality = pausalidade_doc(len(punctuation), num_sentences)
     tokens_per_sentence = palavras_por_sentenca_doc(doc)
+    n_modific_to_token_ratio = (contar_modificadores(tokens) / total_tokens_with_punct) if total_tokens_with_punct > 0 else 0
+
 
     # complexidade
     total_silabas = sum(contar_silabas(t.text) for t in tokens)
     media_silabas_palavra = (total_silabas / total_palavras) if total_palavras > 0 else 0
     num_palavras_complexas_ = contar_palavras_complexas(tokens)
     percentual_palavras_complexas_ = (num_palavras_complexas_ / total_palavras) * 100 if total_palavras > 0 else 0
+    percentual_palavras_funcionais =  (contar_palavras_funcionais / total_palavras) * 100 if total_palavras > 0 else 0
+    percentual_palavras_conteudo =  (contar_palavras_conteudo / total_palavras) * 100 if total_palavras > 0 else 0
 
     gunning_fog_ = 0
     if total_palavras > 0 and num_sentences > 0:
@@ -126,6 +147,8 @@ def extrair_metricas_otimizado(doc):
     informalidade = informalidade_doc(doc, total_palavras)
     especificidade = proporcao_entidades_especificas(doc, total_palavras)
     numero_de_exclamacoes = contar_exclamacoes(doc)
+    numero_de_interrogacoes = contar_interrogacoes(doc)
+    numero_de_voz_passiva = contar_voz_passiva(doc)
 
     # ------ dicionário ------
     return {
@@ -138,6 +161,7 @@ def extrair_metricas_otimizado(doc):
         "adverb_to_token_ratio": n_adverb_to_token_ratio,
         "pronoun_to_token_ratio": n_pronoun_to_token_ratio,
         "stopword_to_token_ratio": n_stopword_to_token_ratio,
+        "n_modific_to_token_ratio": n_modific_to_token_ratio,
         "pausality": pausality,
         "num_palavras": total_palavras,
         "num_tokens": len(tokens_with_punct),
@@ -148,9 +172,14 @@ def extrair_metricas_otimizado(doc):
         "num_palavras": total_palavras,
         "num_palavras_complexas": num_palavras_complexas_,
         "percentual_palavras_complexas": percentual_palavras_complexas_,
+        "percentual_palavras_funcionais": percentual_palavras_funcionais,
+        "percentual_palavras_conteudo": percentual_palavras_conteudo,
         "gunning_fog": gunning_fog_,
         "brunet": brunet_,
         "informalidade": informalidade,
         "especificidade": especificidade,
-        "numero_de_exclamacoes": numero_de_exclamacoes
+        "numero_de_exclamacoes": numero_de_exclamacoes,
+        "numero_de_interrogacoes": numero_de_interrogacoes,
+        "numero_de_voz_passiva": numero_de_voz_passiva
+
     }
