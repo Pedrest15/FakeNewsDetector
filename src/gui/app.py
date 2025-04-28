@@ -1,5 +1,7 @@
 import streamlit as st
 from linguistic_features_classifier.extract_metrics import main
+from passive_voice.análise_fakebr2 import detectar_voz_passiva, \
+    detectar_evidencialidade, detectar_conectores_argumentativos
 from psycolinguistic_classifier.psyco_stats import psycometric_classification
 from ratio_classifier.ratio_classifier import ratio_classifier
 from vocabulary_classifier.vocabulary_classifier import vocab_classifier
@@ -10,7 +12,9 @@ st.title("Detector de Fake News")
 news_text = st.text_area("Digite a notícia que deseja verificar:")
 
 # Selectbox para escolha do modelo
-model_options = ["Atributos Linguísticos", "Vocabulário", "Proporções Linguísticas", "Psycolinguistic Classifier"]
+model_options = ["Atributos Linguísticos", "Vocabulário", "Proporções Linguísticas", 
+                 "Psycolinguistic Classifier", "Voz Passiva", "Evidencialidade",
+                 "Conectores Argumentativos"]
 selected_model = st.selectbox("Selecione o modelo de detecção:", model_options)
 
 # Botão de avaliação
@@ -26,6 +30,12 @@ if st.button("Avaliar Fake News"):
             result = ratio_classifier.news_classifier(text=news_text)
         elif selected_model == "Psycolinguistic Classifier":
             result = psycometric_classification(text=news_text)
+        elif selected_model == "Voz Passiva":
+            result = detectar_voz_passiva(texto=news_text)
+        elif selected_model == "Evidencialidade":
+            result = detectar_evidencialidade(texto=news_text)
+        elif selected_model == "Conectores Argumentativos":
+            result = detectar_conectores_argumentativos(texto=news_text)
 
         # Exibe o resultado
         with st.expander("Resultado da Avaliação", expanded=True):

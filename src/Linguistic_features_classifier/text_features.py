@@ -86,10 +86,12 @@ def contar_voz_passiva(doc):
 def contar_palavras_conteudo(doc):
     content_tags = {"NOUN", "VERB", "ADJ", "ADV"}
     content_words = [t for t in doc if t.pos_ in content_tags]
+    return len (content_words)
 
 def contar_palavras_funcionais(doc):
-        content_tags = {"NOUN", "VERB", "ADJ", "ADV"}
-        function_words = [t for t in doc if t.pos_ not in content_tags and t.is_alpha]
+    content_tags = {"NOUN", "VERB", "ADJ", "ADV"}
+    function_words = [t for t in doc if t.pos_ not in content_tags and t.is_alpha]
+    return len(function_words)
 
     # ------ Métricas ------
 def extrair_metricas_otimizado(doc):
@@ -103,12 +105,10 @@ def extrair_metricas_otimizado(doc):
     tokens_with_punct = [t for t in doc]
 
     total_tokens_with_punct = len(tokens_with_punct)
-    total_tokens = len(tokens)
     total_palavras = contar_palavras_doc(doc)
 
     num_sentences = numero_de_sentencas_doc(doc)
     punctuation = [t for t in doc if t.is_punct]
-    total_punctuation = len(punctuation)
 
     # substitui "text, tokens_ling" pelas versões doc-based.
     n_type_token_ratio = (contar_palavras_unicas_doc(doc) / total_palavras) if total_palavras > 0 else 0
@@ -129,8 +129,8 @@ def extrair_metricas_otimizado(doc):
     media_silabas_palavra = (total_silabas / total_palavras) if total_palavras > 0 else 0
     num_palavras_complexas_ = contar_palavras_complexas(tokens)
     percentual_palavras_complexas_ = (num_palavras_complexas_ / total_palavras) * 100 if total_palavras > 0 else 0
-    percentual_palavras_funcionais =  (contar_palavras_funcionais / total_palavras) * 100 if total_palavras > 0 else 0
-    percentual_palavras_conteudo =  (contar_palavras_conteudo / total_palavras) * 100 if total_palavras > 0 else 0
+    percentual_palavras_funcionais =  (contar_palavras_funcionais(tokens) / total_palavras) * 100 if total_palavras > 0 else 0
+    percentual_palavras_conteudo =  (contar_palavras_conteudo(tokens) / total_palavras) * 100 if total_palavras > 0 else 0
 
     gunning_fog_ = 0
     if total_palavras > 0 and num_sentences > 0:
@@ -181,5 +181,4 @@ def extrair_metricas_otimizado(doc):
         "numero_de_exclamacoes": numero_de_exclamacoes,
         "numero_de_interrogacoes": numero_de_interrogacoes,
         "numero_de_voz_passiva": numero_de_voz_passiva
-
     }
