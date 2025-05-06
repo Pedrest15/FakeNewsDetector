@@ -1,10 +1,10 @@
 import streamlit as st
-from linguistic_features_classifier.extract_metrics import main
-from passive_voice.análise_fakebr2 import detectar_voz_passiva, \
+from src.linguistic_features_classifier.extract_metrics import main
+from src.passive_voice.análise_fakebr2 import detectar_voz_passiva, \
     detectar_evidencialidade, detectar_conectores_argumentativos
-from psycolinguistic_classifier.psyco_stats import psycometric_classification
-from ratio_classifier.ratio_classifier import ratio_classifier
-from vocabulary_classifier.vocabulary_classifier import vocab_classifier
+from src.psycolinguistic_classifier.psyco_stats import psycometric_classification
+from src.ratio_classifier.ratio_classifier import ratio_classifier
+from src.vocabulary_classifier.vocabulary_classifier import vocab_classifier
 
 st.title("Detector de Fake News")
 
