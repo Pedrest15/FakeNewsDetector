@@ -1,5 +1,5 @@
 import sys
-from linguistic_features_classifier.text_features import nlp, extrair_metricas_otimizado
+from src.linguistic_features_classifier.text_features import nlp, extrair_metricas_otimizado
 
 def classify_by_rules(text: str) -> int:
     doc = nlp(text)
