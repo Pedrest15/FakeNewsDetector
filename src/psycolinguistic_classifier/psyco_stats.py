@@ -10,17 +10,10 @@ from spacy.tokens import Doc, Token
 
 from pathlib import Path
 
-
-nltk.download('punkt')
-nltk.download('rslp')
-nltk.download('stopwords')
-
-
-source_file = r"psycolinguistic_classifier\BP.csv"
+source_file = r"src\psycolinguistic_classifier\BP.csv"
 
 #if not source_file.exists():
 #    raise FileNotFoundError('Check the psycholinguistic file location!')
-
 
 psylin = pd.read_csv(
     source_file,
