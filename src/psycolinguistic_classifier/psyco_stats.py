@@ -10,6 +10,11 @@ from spacy.tokens import Doc, Token
 
 from pathlib import Path
 
+from .commands import (
+    Comparison,
+    BranchingCommand,
+)
+
 source_file = r"src\psycolinguistic_classifier\BP.csv"
 
 #if not source_file.exists():
@@ -35,14 +40,17 @@ psylin.set_index('word', inplace=True)
 
 vocabulary = psylin.to_dict(orient='index')
 
-
-def get_psychometric_stat(doc, feature):
-
+def get_psychometric_features(doc : Doc, feature : str):
     values = [
         getattr(token._, feature)
         for token in doc
         if getattr(token._, feature) != 0
     ]
+    return values
+
+def get_psychometric_stats(doc : Doc, feature : str):
+
+    values = get_psychometric_features(doc, feature)
 
     if (not values) | (all(v == 0 for v in values)):
         stats = {
@@ -58,13 +66,12 @@ def get_psychometric_stat(doc, feature):
         'std' : np.round(np.std(values, ddof=1), 3),
         'max' : np.max(values),
         'min' : np.min(values),
-        'sum' : np.round(np.sum(values), 3),
-        'vardiff' : np.round( np.var(np.diff(values), ddof=1), 4),
-        'cv': np.round(np.std(values, ddof=1) / np.mean(values), 4) if np.mean(values) != 0 else 0
+        # 'sum' : np.round(np.sum(values), 3),
+        # 'vardiff' : np.round( np.var(np.diff(values), ddof=1), 4),
+        # 'cv': np.round(np.std(values, ddof=1) / np.mean(values), 4) if np.mean(values) != 0 else 0
     }
 
     return stats
-
 
 features = [
     'concreteness',
@@ -81,7 +88,7 @@ for feature in features:
 
     if Doc.has_extension(feature):
         Doc.remove_extension(feature)
-    Doc.set_extension(feature, getter=lambda doc, f=feature: get_psychometric_stat(doc, f))
+    Doc.set_extension(feature, getter=lambda doc, f=feature: get_psychometric_features(doc, f))
 
 for feature in features:
     assert Token.has_extension(feature)
@@ -115,115 +122,113 @@ nlp = spacy.blank('pt')
 # nlp.add_pipe('sentencizer')
 nlp.add_pipe('annotate_psychometrics')
 
+# conditions = [
+#         Comparison(
+#             stat='max',
+#             field='concreteness',
+#             operator='>',
+#             value=6.0
+#         ),
+#         Comparison(
+#             stat='max',
+#             field='aoa',
+#             operator='>',
+#             value=8.0
+#         ),
+#         Comparison(
+#             stat='max',
+#             field='imagery',
+#             operator='>',
+#             value=6.0
+#         ),
+#         Comparison(
+#             stat='max',
+#             field='subjectivity',
+#             operator='>',
+#             value=6.0
+#         ),
+# ]
 
-class BasicRule:
-
-    def apply(self, doc):
-        raise NotImplementedError()
-
-class Rule(BasicRule):
-
-    def __init__(self, next_rule=None):
-        self.next = next_rule
-
-    def check(self, doc):
-        stop = self.apply(doc)
-        if not stop and self.next:
-            self.next.check(doc)
-        return doc
-
-
-class BranchingRule(BasicRule):
-
-    def __init__(self, if_true=None, if_false=False):
-        self.branch_true = if_true
-        self.branch_false = if_false
-
-    def check(self, doc):
-        if self.apply(doc):
-            return self.branch_true.check(doc) if self.branch_true else 'classified_true'
-        else:
-            return self.branch_false.check(doc) if self.branch_false else 'classified_fake'
-
-
-class HighConcreteness(Rule):
-
-    def __init__(self, threshold=6.0, next_rule=None):
-        super().__init__(next_rule)
-        self.threshold = threshold
-
-    def apply(self, doc):
-        if doc._.concreteness['max'] > self.threshold:
-            doc._.asserts.append('true')
-        else:
-            doc._.asserts.append('fake')
-
-        return False
-
-class HighAgeOfAcquisition(Rule):
-
-    def __init__(self, threshold=8.0, next_rule=None):
-        super().__init__(next_rule)
-        self.threshold = threshold
-
-    def apply(self, doc):
-        if doc._.concreteness['max'] > self.threshold:
-            doc._.asserts.append('true')
-        else:
-            doc._.asserts.append('fake')
-
-        return False
-
-class HighImagery(Rule):
-
-    def __init__(self, threshold=6.0, next_rule=None):
-        super().__init__(next_rule)
-        self.threshold = threshold
-
-    def apply(self, doc):
-        if doc._.concreteness['max'] > self.threshold:
-            doc._.asserts.append('true')
-        else:
-            doc._.asserts.append('fake')
-
-        return False
-
-class HighSubjectivity(Rule):
-
-    def __init__(self, threshold=6.0, next_rule=None):
-        super().__init__(next_rule)
-        self.threshold = threshold
-
-    def apply(self, doc):
-        if doc._.concreteness['max'] > self.threshold:
-            doc._.asserts.append('true')
-        else:
-            doc._.asserts.append('fake')
-
-        return False
-
-
-chain = HighConcreteness(
-    next_rule=HighSubjectivity(
-        next_rule=HighAgeOfAcquisition(
-            next_rule=HighImagery()
-        )
-    )
+cmd1 = Comparison(
+    stat='max',
+    field='aoa',
+    operator='<=',
+    value=8.18
 )
 
+cmd2 = Comparison(
+    stat='min',
+    field='imagery',
+    operator='<=',
+    value=3.21
+)
 
-def psycometric_classification(text : str, nlp=nlp, rule=chain):
+cmd3 = Comparison(
+    stat='max',
+    field='imagery',
+    operator='<=',
+    value=5.68
+)
 
-    doc = nlp(text)
-    chain.check(doc)
-    counter = Counter(doc._.asserts)
+cmd4 = Comparison(
+    stat='max',
+    field='imagery',
+    operator='<=',
+    value=5.98
+)
 
-    return 'fake' if (counter['fake'] > counter['true']) else 'true'
+cmd5 = Comparison(
+    stat='max',
+    field='aoa',
+    operator='<=',
+    value=8.07
+)
 
+cmd6 = Comparison(
+    stat='min',
+    field='imagery',
+    operator='<=',
+    value=3.00
+)
 
+bch1 = BranchingCommand(
+    condition=cmd1,
+    if_true=True,
+    if_false=False
+)
 
+bch2 = BranchingCommand(
+    condition=cmd2,
+    if_true=bch1,
+    if_false=True # Estranho!
+)
 
+bch3 = BranchingCommand(
+    condition=cmd3,
+    if_true=True,
+    if_false=False
+)
 
+bch4 = BranchingCommand(
+    condition=cmd4,
+    if_true=True,
+    if_false=False
+)
 
+bch5 = BranchingCommand(
+    condition=cmd5,
+    if_true=bch4,
+    if_false=bch3
+)
 
+bch6 = BranchingCommand(
+    condition=cmd6,
+    if_true=bch5,
+    if_false=bch2
+)
 
+def psycometric_classification(in_doc : str, nlp=nlp, ruler=bch6):
+
+    doc =  nlp(in_doc) if isinstance(in_doc, str) else in_doc
+
+    return 'fake' if ruler.eval(doc) else 'true'
