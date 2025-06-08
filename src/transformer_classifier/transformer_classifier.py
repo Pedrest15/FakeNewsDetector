@@ -4,7 +4,7 @@ import math
 from transformers import BertTokenizer, BertModel
 
 EMBEDDING_ID = "neuralmind/bert-large-portuguese-cased" #335M
-CLASSIFIER_FILE =  "REGRAS_02_Bertimbau_RBFKernelSVM.joblib"
+CLASSIFIER_FILE =  r"src\transformer_classifier\REGRAS_02_Bertimbau_RBFKernelSVM.joblib"
 
 class TransformerClassifier:
     def __init__(self, embedding_id = EMBEDDING_ID, classifier_path = CLASSIFIER_FILE):
@@ -62,6 +62,6 @@ class TransformerClassifier:
         sentence_embedding = self.get_sentence_embedding(sentence)
         prediction = self.classifier.predict(sentence_embedding.tolist())
 
-        return "FAKE" if prediction == 1 else "REAL"
+        return "fake" if prediction == 1 else "true"
 
 transformer_classifier = TransformerClassifier()
