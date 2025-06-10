@@ -11,8 +11,8 @@ st.title("Detector de Fake News")
 news_text = st.text_area("Digite a notícia que deseja verificar:")
 
 # Selectbox para escolha do modelo
-model_options = ["Atributos Linguísticos", "Vocabulário", "Proporções Linguísticas", 
-                 "Psycolinguistic Classifier", "Transformers"]
+model_options = ["Transformers", "Atributos Linguísticos", "Vocabulário", "Proporções Linguísticas", 
+                 "Psycolinguistic Classifier"]
 selected_model = st.selectbox("Selecione o modelo de detecção:", model_options)
 
 # Botão de avaliação
@@ -42,3 +42,13 @@ if st.button("Avaliar Notícia"):
                 st.error("""Cuidado, pode se tratar de uma notícia falsa (Fake News).
                          Cheque em fontes confiáveis.""")
 
+st.markdown("----")
+st.markdown("#### Sobre o Projeto")
+st.markdown("""
+Este detector de Fake News foi desenvolvido como parte da disciplina Processamento de Linguagem Natural do ICMC - USP em 2025/1.
+
+**Criadores:** Pedro Andrade, Giliard Godoi, Laura Moreira, Lucas Melo, Lucca Ferraz e Rafael Gouveia  
+**Instituição:** Instituto de Ciências Matemáticas e de Computação - USP São Carlos  
+✉️ Contate-nos via [email](mailto:pedroandrade@usp.br)
+🔗 Acesse o [repositório no GitHub](https://github.com/Pedrest15/FakeNewsDetector)
+""")
