@@ -12,7 +12,7 @@ class TransformerClassifier:
         self.model = BertModel.from_pretrained(embedding_id)
         self.classifier = joblib.load(classifier_path)
 
-    def get_sentence_embedding(x, tokenizer, model, pooling="special_token"):
+    def get_sentence_embedding(self, x, pooling="special_token"):
         with torch.no_grad():
             token_limit = 512
             word_limit = int(token_limit*0.75) #more than that will be truncated
@@ -34,9 +34,9 @@ class TransformerClassifier:
             sentence_chunks = [" ".join(sentence) for sentence in sentence_chunks]
             embeddings = []
             for chunk in sentence_chunks:  
-                encoded_input = tokenizer(chunk, add_special_tokens=True, truncation=True, max_length=512, return_attention_mask=True)
+                encoded_input = self.tokenizer(chunk, add_special_tokens=True, truncation=True, max_length=512, return_attention_mask=True)
                 input_ids = torch.tensor(encoded_input["input_ids"]).unsqueeze(0)  # Batch size 1
-                outputs = model(input_ids)
+                outputs = self.model(input_ids)
 
                 last_hidden_states = outputs.last_hidden_state #(batch_size, input_len, embedding_size) But I need single vector for each sentence
 
@@ -60,7 +60,7 @@ class TransformerClassifier:
     
     def news_classifier(self, sentence: str):
         sentence_embedding = self.get_sentence_embedding(sentence)
-        prediction = self.classifier.predict(sentence_embedding.tolist())
+        prediction = self.classifier.predict([sentence_embedding.tolist()])
 
         return "fake" if prediction == 1 else "true"
 
