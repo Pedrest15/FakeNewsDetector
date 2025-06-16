@@ -4,7 +4,7 @@ Trabalho desenvolvido ao longo da disciplina Processamento de Linguagem Natural 
 
 Para executar a interface, siga os seguintes passos:
 
-1. Tenha uma versão do python intalada, recomenta-se 3.11
+1. Tenha uma versão do Python instalada (recomenda-se 3.11)
 
 2. Instale as dependências necessárias
 ```python
